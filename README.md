@@ -1,7 +1,8 @@
 # badgeware
 
 Apps for the [Pimoroni Badgeware Tufty 2350](https://shop.pimoroni.com/products/tufty-2350)
-badge. Each one pulls live data over WiFi and draws it on the badge's 320x240 screen.
+badge. Two pull live data over WiFi; the third is a name badge built around your own logo.
+All draw on the badge's full 320x240 screen.
 
 Written and tested on Tufty firmware v3.1.1.
 
@@ -46,11 +47,36 @@ the selected quake's magnitude, place, age and depth.
 - The feed refreshes every five minutes.
 - The map is the `world.geo.json` that ships with the stock firmware.
 
+### Logo Badge
+
+A three-page name badge built around your own logo or picture: the art with a
+name plate, a page of your social accounts, and a QR code.
+
+![Logo Badge pages on a Tufty 2350](docs/logo_badge.png)
+
+| Button | Action |
+|---|---|
+| A | Previous page |
+| C or B | Next page |
+
+To make it yours:
+
+- Edit the name, role, accounts and QR address at the top of
+  `logo_badge/__init__.py`. The accounts can be any of the services with an icon
+  in `logo_badge/assets/socials`.
+- Replace the placeholder art by running `python logo_badge/make_assets.py
+  your-picture.png` on your computer (needs Pillow). It fits the picture above
+  the name plate and builds the dimmed copy used behind the other pages.
+- The QR code is generated on the badge, which needs firmware v3.1.0 or newer.
+
+The social icons come from Pimoroni's stock badge app and are MIT licensed; see
+`logo_badge/assets/socials/LICENSE`.
+
 ## Installing
 
 1. Set your WiFi details in `secrets.py` on the badge, if you haven't already.
 2. Put the badge into disk mode (double-press RESET).
-3. Copy the app's folder (`planes_overhead` or `earthquakes`) into `apps` on the badge.
+3. Copy the app's folder (`planes_overhead`, `earthquakes` or `logo_badge`) into `apps` on the badge.
 4. Eject the drive and wait for it to finish, then press RESET.
 
 Always eject before resetting or unplugging. The badge's drive is easily

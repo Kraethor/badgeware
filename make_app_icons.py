@@ -1,4 +1,4 @@
-"""Draws the 24x24 launcher icons for the Planes Overhead and Earthquakes apps
+"""Draws the 24x24 launcher icons for the apps in this repo
 as pixel art in the style of the stock icons. Needs: pip install pillow
 """
 from pathlib import Path
@@ -90,3 +90,38 @@ build([
     "kppppppppppppppppppppk",
     "kkkkkkkkkkkkkkkkkkkkkk",
 ], QUAKE, HERE / "earthquakes" / "icon.png")
+
+LOGO = {
+    ".": (0, 0, 0, 0),
+    "k": (16, 22, 40, 255),      # outline
+    "n": (28, 40, 72, 255),      # card
+    "b": (47, 125, 240, 255),    # emblem
+    "c": (130, 200, 255, 255),   # emblem highlight
+    "s": (222, 230, 242, 255),   # name plate text
+    "g": (120, 140, 170, 255),   # role text
+    "h": (90, 100, 120, 255),    # lanyard clip
+}
+build([
+    ".........khhk.........",
+    ".........khhk.........",
+    "..kkkkkkkkhhkkkkkkkk..",
+    ".knnnnnnnkkkknnnnnnnk.",
+    ".knnnnnnnnnnnnnnnnnnk.",
+    ".knnnnnnnnbbnnnnnnnnk.",
+    ".knnnnnnbbbbbbnnnnnnk.",
+    ".knnnnnbbbbbbbbnnnnnk.",
+    ".knnnnnbbbccbbbnnnnnk.",
+    ".knnnnnbbccccbbnnnnnk.",
+    ".knnnnnbbccccbbnnnnnk.",
+    ".knnnnnbbbccbbbnnnnnk.",
+    ".knnnnnbbbbbbbbnnnnnk.",
+    ".knnnnnnbbbbbbnnnnnnk.",
+    ".knnnnnnnnbbnnnnnnnnk.",
+    ".knnnnnnnnnnnnnnnnnnk.",
+    ".knnnssssssssssssnnnk.",
+    ".knnnnnnnnnnnnnnnnnnk.",
+    ".knnnnnggggggggnnnnnk.",
+    ".knnnnnnnnnnnnnnnnnnk.",
+    "..kkkkkkkkkkkkkkkkkk..",
+    "......................",
+], LOGO, HERE / "logo_badge" / "icon.png")
