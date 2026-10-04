@@ -72,6 +72,25 @@ To make it yours:
 The social icons come from Pimoroni's stock badge app and are MIT licensed; see
 `logo_badge/assets/socials/LICENSE`.
 
+## More than one WiFi network
+
+The stock firmware reads a single `WIFI_SSID` and `WIFI_PASSWORD` from
+`secrets.py`. `extras/multi_wifi_secrets.py` is a drop-in replacement that takes
+a list of networks instead: whenever an app loads it, the badge scans for what is
+in range and uses the first listed network it can see. Every app, stock or from
+this repo, then connects without any changes.
+
+1. Fill in your networks, region and timezone in `extras/multi_wifi_secrets.py`.
+2. Put the badge into disk mode and copy the file to the root of the drive as
+   `secrets.py`, replacing the one that is there.
+3. Eject, then press RESET.
+
+- The scan adds a little over a second to starting any app that reads `secrets.py`.
+- If none of the listed networks is in range, the badge tries the first one in the list.
+- Reflashing the badge with a "with-filesystem" firmware image resets `secrets.py`.
+
+Keep your filled-in copy out of any public repository; it holds your WiFi passwords.
+
 ## Installing
 
 1. Set your WiFi details in `secrets.py` on the badge, if you haven't already.
