@@ -4,6 +4,10 @@ Apps for the [Pimoroni Badgeware Tufty 2350](https://shop.pimoroni.com/products/
 badge. Two pull live data over WiFi; the third is a name badge built around your own logo.
 All draw on the badge's full 320x240 screen.
 
+Also here: a drop-in `secrets.py` that takes a **list** of WiFi networks instead of a
+single one, so the badge connects on whichever is in range — see
+[More than one WiFi network](#more-than-one-wifi-network).
+
 Written and tested on Tufty firmware v3.1.1.
 
 ## Apps
@@ -93,7 +97,8 @@ Keep your filled-in copy out of any public repository; it holds your WiFi passwo
 
 ## Installing
 
-1. Set your WiFi details in `secrets.py` on the badge, if you haven't already.
+1. Set your WiFi details in `secrets.py` on the badge, if you haven't already — or use
+   the multi-network replacement from [More than one WiFi network](#more-than-one-wifi-network).
 2. Put the badge into disk mode (double-press RESET).
 3. Copy the app's folder (`planes_overhead`, `earthquakes` or `logo_badge`) into `apps` on the badge.
 4. Eject the drive and wait for it to finish, then press RESET.
