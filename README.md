@@ -1,7 +1,7 @@
 # badgeware
 
 Apps for the [Pimoroni Badgeware Tufty 2350](https://shop.pimoroni.com/products/tufty-2350)
-badge. Two pull live data over WiFi; the third is a name badge built around your own logo.
+badge. Two pull live data over WiFi; the others are name badges built around your own logo.
 All draw on the badge's full 320x240 screen.
 
 Also here: a drop-in `secrets.py` that takes a **list** of WiFi networks instead of a
@@ -76,6 +76,19 @@ To make it yours:
 The social icons come from Pimoroni's stock badge app and are MIT licensed; see
 `logo_badge/assets/socials/LICENSE`.
 
+### Ham Badge
+
+A single-page amateur-radio name badge, built from Logo Badge: the club logo in a
+panel on the left, your name on the right, and your callsign across the bottom in
+large white letters, with a slash drawn through the zero, ham style.
+
+To make it yours:
+
+- Edit `callsign` and `name_lines` at the top of `ham_badge/__init__.py`.
+- Rebuild the background and launcher icon from your own logo by running `python
+  ham_badge/make_assets.py your-logo.png` on your computer (needs Pillow). It fits
+  the logo into the left panel on a black field and shrinks a copy for the icon.
+
 ## More than one WiFi network
 
 The stock firmware reads a single `WIFI_SSID` and `WIFI_PASSWORD` from
@@ -100,7 +113,7 @@ Keep your filled-in copy out of any public repository; it holds your WiFi passwo
 1. Set your WiFi details in `secrets.py` on the badge, if you haven't already — or use
    the multi-network replacement from [More than one WiFi network](#more-than-one-wifi-network).
 2. Put the badge into disk mode (double-press RESET).
-3. Copy the app's folder (`planes_overhead`, `earthquakes` or `logo_badge`) into `apps` on the badge.
+3. Copy the app's folder (`planes_overhead`, `earthquakes`, `logo_badge` or `ham_badge`) into `apps` on the badge.
 4. Eject the drive and wait for it to finish, then press RESET.
 
 Always eject before resetting or unplugging. The badge's drive is easily
