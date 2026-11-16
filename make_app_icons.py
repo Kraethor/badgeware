@@ -125,3 +125,36 @@ build([
     "..kkkkkkkkkkkkkkkkkk..",
     "......................",
 ], LOGO, HERE / "logo_badge" / "icon.png")
+
+WIFI = {
+    ".": (0, 0, 0, 0),
+    "k": (16, 22, 40, 255),      # outline
+    "n": (14, 22, 36, 255),      # panel
+    "f": (120, 230, 255, 255),   # strong arc
+    "m": (60, 150, 200, 255),    # weaker arc
+    "w": (35, 80, 120, 255),     # weakest arc
+}
+build([
+    "..kkkkkkkkkkkkkkkkkk..",
+    ".knnnnnnnnnnnnnnnnnnk.",
+    "knnnnnnnnnnnnnnnnnnnnk",
+    "knnnnnnwwwwwwwwnnnnnnk",
+    "knnnnwwwnnnnnnwwwnnnnk",
+    "knnnwwnnnnnnnnnnwwnnnk",
+    "knnwwnnnnnnnnnnnnwwnnk",
+    "knnwnnnnmmmmmmnnnnwnnk",
+    "knnnnnmmmnnnnmmmnnnnnk",
+    "knnnnmmnnnnnnnnmmnnnnk",
+    "knnnnmnnnnnnnnnnmnnnnk",
+    "knnnnnnnnffffnnnnnnnnk",
+    "knnnnnnnfffffffnnnnnnk",
+    "knnnnnnffnnnnffnnnnnnk",
+    "knnnnnnfnnnnnnfnnnnnnk",
+    "knnnnnnnnnffnnnnnnnnnk",
+    "knnnnnnnnffffnnnnnnnnk",
+    "knnnnnnnnffffnnnnnnnnk",
+    "knnnnnnnnnffnnnnnnnnnk",
+    "knnnnnnnnnnnnnnnnnnnnk",
+    ".knnnnnnnnnnnnnnnnnnk.",
+    "..kkkkkkkkkkkkkkkkkk..",
+], WIFI, HERE / "wifi_scanner" / "icon.png")

@@ -1,7 +1,8 @@
 # badgeware
 
 Apps for the [Pimoroni Badgeware Tufty 2350](https://shop.pimoroni.com/products/tufty-2350)
-badge. Two pull live data over WiFi; the others are name badges built around your own logo.
+badge. Two pull live data over WiFi, one scans for the WiFi networks around you, and the
+others are name badges built around your own logo.
 All draw on the badge's full 320x240 screen.
 
 Also here: a drop-in `secrets.py` that takes a **list** of WiFi networks instead of a
@@ -89,6 +90,26 @@ To make it yours:
   ham_badge/make_assets.py your-logo.png` on your computer (needs Pillow). It fits
   the logo into the left panel on a black field and shrinks a copy for the icon.
 
+### WiFi Scanner
+
+Lists the WiFi networks in range, adding each one as the badge finds it. Each row
+shows signal bars, the network name, its security, channel and signal strength
+in dBm. Newly found networks get a fading blue marker on the left; networks that
+have not been heard for three scans are greyed out but kept on the list.
+
+| Button | Action |
+|---|---|
+| UP / DOWN | Move through the list |
+| C | Details for the selected network (BSSID, best signal, first and last seen) |
+| B | Sort by newest (first found), latest (most recently heard), signal or channel |
+| A | Pause or resume scanning |
+
+- Scans run back to back with a two-second gap. Each scan takes a couple of
+  seconds, during which the screen holds still.
+- The badge's radio is 2.4 GHz only, so 5 GHz and 6 GHz networks don't appear.
+- Nothing is saved; the list starts empty each time the app opens. It doesn't
+  need `secrets.py` or a WiFi connection.
+
 ## More than one WiFi network
 
 The stock firmware reads a single `WIFI_SSID` and `WIFI_PASSWORD` from
@@ -113,7 +134,7 @@ Keep your filled-in copy out of any public repository; it holds your WiFi passwo
 1. Set your WiFi details in `secrets.py` on the badge, if you haven't already — or use
    the multi-network replacement from [More than one WiFi network](#more-than-one-wifi-network).
 2. Put the badge into disk mode (double-press RESET).
-3. Copy the app's folder (`planes_overhead`, `earthquakes`, `logo_badge` or `ham_badge`) into `apps` on the badge.
+3. Copy the app's folder (`planes_overhead`, `earthquakes`, `wifi_scanner`, `logo_badge` or `ham_badge`) into `apps` on the badge.
 4. Eject the drive and wait for it to finish, then press RESET.
 
 Always eject before resetting or unplugging. The badge's drive is easily
