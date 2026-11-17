@@ -46,19 +46,27 @@ wlan.active(True)
 
 
 def security(flags):
-    # cyw43 auth flags: see CYW43_AUTH_FLAG_* in cyw43_ll.h
+    # The cyw43 driver in firmware v3.1.1 reports three bits: 4 = RSN element
+    # (WPA2, but also WPA3 or enterprise: it doesn't say which), 2 = WPA element,
+    # 1 = privacy bit (set for any encrypted network). WEP is the privacy bit alone.
+    # Newer drivers report CYW43_AUTH_FLAG_* values instead; read those if present.
     if flags == 0:
         return "OPEN"
-    eap = "-EAP" if flags & 0x02000000 else ""
-    if flags & 0x01000000:
-        return ("WPA2/3" if flags & 0x00400000 else "WPA3") + eap
-    if flags & 0x00400000:
-        return "WPA2" + eap
-    if flags & 0x00200000:
-        return "WPA" + eap
-    if flags & 0x0001:
-        return "WEP"
-    return "?"
+    if flags > 0xFF:
+        eap = "-EAP" if flags & 0x02000000 else ""
+        if flags & 0x01000000:
+            return ("WPA2/3" if flags & 0x00400000 else "WPA3") + eap
+        if flags & 0x00400000:
+            return "WPA2" + eap
+        if flags & 0x00200000:
+            return "WPA" + eap
+    if flags & 4 and flags & 2:
+        return "WPA/WPA2"
+    if flags & 4:
+        return "WPA2"
+    if flags & 2:
+        return "WPA"
+    return "WEP"
 
 
 def ssid_text(raw):

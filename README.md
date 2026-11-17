@@ -1,7 +1,8 @@
 # badgeware
 
 Apps for the [Pimoroni Badgeware Tufty 2350](https://shop.pimoroni.com/products/tufty-2350)
-badge. Two pull live data over WiFi, two scan for the WiFi networks and Bluetooth devices around you, and the
+badge. Two pull live data over WiFi, two scan for the WiFi networks and Bluetooth devices around you, one watches for
+signs of common WiFi attacks, and the
 others are name badges built around your own logo.
 All draw on the badge's full 320x240 screen.
 
@@ -107,6 +108,8 @@ have not been heard for three scans are greyed out but kept on the list.
 - Scans run back to back with a two-second gap. Each scan takes a couple of
   seconds, during which the screen holds still.
 - The badge's radio is 2.4 GHz only, so 5 GHz and 6 GHz networks don't appear.
+- The badge's WiFi driver (firmware v3.1.1) only reports whether a network is
+  open, WEP, WPA or WPA2-style. WPA3 and enterprise networks show as WPA2.
 - Nothing is saved; the list starts empty each time the app opens. It doesn't
   need `secrets.py` or a WiFi connection.
 
@@ -147,6 +150,48 @@ This downloads the list and writes `bluetooth_scanner/assets/companies.bin`
 (about 130 KB, roughly 4,000 companies). Without it the app still runs, naming a
 few common makers and showing the rest as a hex ID.
 
+### Wifi Watch
+
+Run it when WiFi feels off. It repeatedly scans and probes the air around you
+and shows a green, amber or red status, with one line per check. A red status
+also pulses the badge's case lights. Warnings stay on screen after the cause
+goes away, marked with how long ago they happened, until you clear them.
+
+| Check | What it looks for |
+|---|---|
+| Fake-network probe | Asks for made-up network names that can't exist. An access point that answers is saying yes to every name, which is what KARMA-style rogue APs such as a WiFi Pineapple do. |
+| Security downgrade | The same network name broadcast both encrypted and open (or WEP), or your own secured network showing up as open. |
+| Evil twin | Your networks (the ones named in `secrets.py`) coming from an access point the badge hasn't learned, changing security, or suddenly far stronger than usual. |
+| Beacon flood | A sudden jump in the number of networks, or a burst of brand-new ones in one scan. |
+| Connection drops | The badge joins your network and counts unexplained drops. Repeated drops are the main symptom of a deauthentication attack. |
+| Portal / DNS | While joined, checks that a well-known name doesn't resolve to a private address and that Google's connectivity check isn't redirected. |
+
+| Button | Action |
+|---|---|
+| A | Clear warnings |
+| B, then B again | Learn the access points of your networks that are in range now |
+| C | Warnings seen this session |
+| UP / DOWN | Scroll the warnings |
+
+- **Learn on a network you trust.** The evil-twin check compares against what
+  you learned. Do it once at each place you use (home, work); each network's
+  list is replaced only when it's in range. An open copy of a secured network
+  is never learned. The list is kept in `/state/wifi_watch.json` on the badge.
+- **What it can't see.** The badge can't capture raw WiFi frames, so it can't
+  see deauthentication or disassociation frames, handshake or PMKID capture,
+  or anyone passively listening. It infers deauth attacks from connection
+  drops. It also only covers 2.4 GHz.
+- **WPA3 looks like WPA2.** The firmware doesn't tell WPA2, WPA3 and enterprise
+  apart, so a WPA3 network dropped to WPA2 isn't caught. Downgrades to open or
+  WEP are.
+- **False alarms happen.** A new mesh node or a neighbour using the same network
+  name looks like an unknown access point (amber, not red). Phone hotspots and
+  busy venues can trip the beacon flood check. A DNS filter such as Pi-hole
+  that answers 0.0.0.0 shows as amber.
+- The connection checks need `secrets.py` and are skipped without it. The DNS
+  and connectivity check contact `connectivitycheck.gstatic.com` and
+  `example.com` once a minute. Nothing else is saved.
+
 ## More than one WiFi network
 
 The stock firmware reads a single `WIFI_SSID` and `WIFI_PASSWORD` from
@@ -171,7 +216,7 @@ Keep your filled-in copy out of any public repository; it holds your WiFi passwo
 1. Set your WiFi details in `secrets.py` on the badge, if you haven't already — or use
    the multi-network replacement from [More than one WiFi network](#more-than-one-wifi-network).
 2. Put the badge into disk mode (double-press RESET).
-3. Copy the app's folder (`planes_overhead`, `earthquakes`, `wifi_scanner`, `bluetooth_scanner`, `logo_badge` or `ham_badge`) into `apps` on the badge.
+3. Copy the app's folder (`planes_overhead`, `earthquakes`, `wifi_scanner`, `bluetooth_scanner`, `wifi_watch`, `logo_badge` or `ham_badge`) into `apps` on the badge.
 4. Eject the drive and wait for it to finish, then press RESET.
 
 Always eject before resetting or unplugging. The badge's drive is easily

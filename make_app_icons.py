@@ -191,3 +191,37 @@ build([
     ".knnnnnnnnnnnnnnnnnnk.",
     "..kkkkkkkkkkkkkkkkkk..",
 ], BLE, HERE / "bluetooth_scanner" / "icon.png")
+
+WATCH = {
+    ".": (0, 0, 0, 0),
+    "k": (16, 22, 40, 255),      # outline
+    "s": (32, 70, 52, 255),      # shield
+    "e": (60, 130, 90, 255),     # shield edge
+    "f": (140, 255, 170, 255),   # inner arc / dot
+    "m": (90, 200, 125, 255),    # outer arc
+}
+# left halves, mirrored to make the shield symmetrical
+build([half + half[::-1] for half in (
+    "..........k",
+    "........kke",
+    "......kkees",
+    "...kkkeesss",
+    "..keeesssss",
+    "..kesssssss",
+    "..kessmmmmm",
+    "..kesmmssss",
+    "..kesssffff",
+    "..kessffsss",
+    "..kessssssf",
+    "..kesssssff",
+    "...kesssssf",
+    "...kessssss",
+    "....kesssss",
+    ".....kessss",
+    "......keess",
+    ".......kkee",
+    ".........kk",
+    "...........",
+    "...........",
+    "...........",
+)], WATCH, HERE / "wifi_watch" / "icon.png")
