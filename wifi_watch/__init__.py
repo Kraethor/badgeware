@@ -403,6 +403,9 @@ def learn():
     if learned:
         save_baseline()
         message = "Trusted APs: " + ", ".join(learned)
+        # a new baseline makes the earlier evil-twin warning stale: drop the latch
+        # so what shows now is judged against what was just learned
+        twin.clear()
         check_twin()
     else:
         message = "None of your networks heard recently"
@@ -413,6 +416,7 @@ def forget():
     global baseline, message, message_until
     baseline = {}
     save_baseline()
+    twin.clear()
     check_twin()
     message = "Forgot all learned access points"
     message_until = badge.ticks + 4000
