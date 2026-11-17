@@ -164,7 +164,7 @@ goes away, marked with how long ago they happened, until you clear them.
 | Evil twin | Your networks (the ones named in `secrets.py`) coming from an access point the badge hasn't learned, changing security, or suddenly far stronger than usual. |
 | Beacon flood | A sudden jump in the number of networks, or a burst of brand-new ones in one scan. |
 | Connection drops | The badge joins your network and counts unexplained drops. Repeated drops are the main symptom of a deauthentication attack. |
-| Portal / DNS | While joined, checks that a well-known name doesn't resolve to a private address and that Google's connectivity check isn't redirected. |
+| Portal / DNS | While joined, checks once a minute that a well-known name doesn't resolve to a private address and that Google's connectivity check isn't redirected. A lookup or fetch that just fails is retried after 10 seconds and only warns if it fails twice in a row. |
 
 | Button | Action |
 |---|---|

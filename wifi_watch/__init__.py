@@ -15,6 +15,7 @@ STATE_FILE = "/state/wifi_watch.json"
 
 SCAN_GAP = 2000         # ms between one radio job and the next
 NET_CHECK_EVERY = 60000 # ms between captive portal / DNS checks while connected
+NET_RETRY = 10000       # ms before retrying a check that couldn't finish
 RECONNECT_AFTER = 5000  # ms to wait before rejoining after a drop
 DROP_WINDOW = 300000    # ms over which connection drops are counted
 DROPS_CAUTION = 3
@@ -425,7 +426,7 @@ def forget():
 # ---------------------------------------------------------------- connection
 
 def watch_connection():
-    global was_connected, next_join, join_started, joining_until
+    global was_connected, next_join, join_started, joining_until, next_net_check
 
     if JOIN_SSID is None:
         drops.set(OFF, "no network in secrets.py to join")
@@ -438,6 +439,9 @@ def watch_connection():
         drop_times.append(now)
         next_join = now + RECONNECT_AFTER
         join_started = False
+    if connected and not was_connected:
+        # let DHCP and DNS settle before the first portal / DNS check
+        next_net_check = max(next_net_check, now + 5000)
     was_connected = connected
     while drop_times and now - drop_times[0] > DROP_WINDOW:
         drop_times.pop(0)
@@ -465,21 +469,41 @@ def watch_connection():
             portal.set(OFF, "needs a connection")
 
 
+portal_failures = 0     # check attempts in a row that couldn't finish
+
+
+def inconclusive(text):
+    # A lookup or fetch that times out once is usually the radio being busy or
+    # the connection just coming up, not an attack: warn only on a repeat.
+    # Returns how soon to try again.
+    global portal_failures
+    portal_failures += 1
+    if portal_failures >= 2:
+        portal.set(CAUTION, "{} ({} tries in a row)".format(text, portal_failures))
+        return NET_CHECK_EVERY
+    if portal.level == OFF:
+        portal.set(OFF, "checking again shortly")
+    return NET_RETRY
+
+
 def check_portal_dns():
+    # returns ms until the next check
+    global portal_failures
+
     # DNS first: a well-known name answering with a private address
     sinkholed = []
     for name in DNS_NAMES:
         try:
             ip = socket.getaddrinfo(name, 80)[0][-1][0]
         except (OSError, IndexError):
-            portal.set(CAUTION, "DNS lookup for {} failed".format(name))
-            return
+            return inconclusive("DNS lookup for {} failed".format(name))
         ip = str(ip)
         if ip == "0.0.0.0":
             sinkholed.append(name)
         elif private_ip(ip):
+            portal_failures = 0
             portal.set(ALERT, "DNS: {} -> private {}".format(name, ip))
-            return
+            return NET_CHECK_EVERY
 
     # then the connectivity check: anything but an empty 204 is a portal or proxy
     s = socket.socket()
@@ -489,19 +513,20 @@ def check_portal_dns():
         s.send(b"GET " + PORTAL_PATH.encode() + b" HTTP/1.0\r\nHost: " + PORTAL_HOST.encode()
                + b"\r\nUser-Agent: tufty-wifi-watch\r\n\r\n")
         line = s.readline() if hasattr(s, "readline") else s.recv(64)
-        code = int(line.split()[1])
-    except (OSError, ValueError, IndexError):
-        portal.set(CAUTION, "connectivity check didn't complete")
-        return
+        code = int(line.split()[1].decode())
+    except (OSError, ValueError, IndexError, TypeError, UnicodeError):
+        return inconclusive("connectivity check didn't complete")
     finally:
         s.close()
 
+    portal_failures = 0
     if code != 204:
         portal.set(CAUTION, "connectivity check got HTTP {} (portal or proxy)".format(code))
     elif sinkholed:
         portal.set(CAUTION, "DNS blocks {}".format(sinkholed[0]))
     else:
         portal.set(OK, "DNS and connectivity check clean")
+    return NET_CHECK_EVERY
 
 
 # ---------------------------------------------------------------- drawing
@@ -621,8 +646,7 @@ def update():
     elif job == "probe":
         run_probe()
     elif job == "net":
-        check_portal_dns()
-        next_net_check = badge.ticks + NET_CHECK_EVERY
+        next_net_check = badge.ticks + check_portal_dns()
     if job:
         job = None
         next_job_at = badge.ticks + SCAN_GAP
