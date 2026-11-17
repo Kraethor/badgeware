@@ -3,7 +3,8 @@
 Apps for the [Pimoroni Badgeware Tufty 2350](https://shop.pimoroni.com/products/tufty-2350)
 badge. Two pull live data over WiFi, two scan for the WiFi networks and Bluetooth devices around you, one watches for
 signs of common WiFi attacks, and the
-others are name badges built around your own logo.
+others are name badges built around your own logo. There is also a replacement
+launcher, the [Kraethor launcher](#kraethor-launcher).
 All draw on the badge's full 320x240 screen.
 
 Also here: a drop-in `secrets.py` that takes a **list** of WiFi networks instead of a
@@ -194,6 +195,42 @@ goes away, marked with how long ago they happened, until you clear them.
 - The connection checks need `secrets.py` and are skipped without it. The DNS
   and connectivity check contact `connectivitycheck.gstatic.com` and
   `example.com` once a minute. Nothing else is saved.
+
+## Kraethor launcher
+
+`menu_kraethor` is a replacement for the badge's launcher (BadgeOS), in the
+blues of the dragon badge. It runs at the screen's full 320x240 resolution
+instead of the stock menu's 160x120, so icons are drawn sharp at their real
+size and 15 fit on a page (5 x 3) instead of 6.
+
+| Button | Action |
+|---|---|
+| A / C | Previous / next app |
+| UP / DOWN | Row up / down |
+| UP on the top row | Change the background |
+| B | Launch |
+
+Backgrounds: a starfield with shooting stars, a scrolling terminal, a scrolling
+hex dump, an SDR-style waterfall, and a circuit board with pulses running along
+its traces. The choice is remembered in `/state/menu_kraethor.json`.
+
+It sits beside the stock launcher rather than replacing it:
+
+1. Put the badge into disk mode and copy the `menu_kraethor` folder into `apps`.
+2. In `main.py` at the root of the drive, change
+   `launch("/system/apps/menu")` to `launch("/system/apps/menu_kraethor")`.
+   Keep a copy of the original `main.py` first.
+3. Eject, then press RESET.
+
+To go back, change that line back. The stock menu in `apps/menu` is never
+touched, and double-tapping RESET still reaches disk mode even if the launcher
+fails, because the firmware checks for that before it runs `main.py`.
+
+- Before starting an app it switches the display back to the badge's default
+  low-resolution mode and font, which several stock apps rely on.
+- Reflashing with a "with-filesystem" firmware image restores the stock `main.py`.
+- Based on Pimoroni's stock menu, which is MIT licensed; see
+  `menu_kraethor/LICENSE-pimoroni`.
 
 ## More than one WiFi network
 
