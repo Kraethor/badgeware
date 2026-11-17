@@ -169,14 +169,17 @@ goes away, marked with how long ago they happened, until you clear them.
 | Button | Action |
 |---|---|
 | A | Clear warnings |
-| B, then B again | Learn the access points of your networks that are in range now |
-| C | Warnings seen this session |
+| B, then B again | Learn the access points of your networks heard in the last two minutes or so |
+| C | Warnings seen this session (press B twice there to forget all learned access points) |
 | UP / DOWN | Scroll the warnings |
 
 - **Learn on a network you trust.** The evil-twin check compares against what
-  you learned. Do it once at each place you use (home, work); each network's
-  list is replaced only when it's in range. An open copy of a secured network
-  is never learned. The list is kept in `/state/wifi_watch.json` on the badge.
+  you learned. Let the app run for a couple of minutes first, so distant access
+  points that are only heard now and then get picked up. Learning adds to what
+  was learned before, so with several access points you can learn in a few
+  rooms, and at each place you use (home, work). An open copy of a secured
+  network is never learned. The list is kept in `/state/wifi_watch.json` on the
+  badge.
 - **What it can't see.** The badge can't capture raw WiFi frames, so it can't
   see deauthentication or disassociation frames, handshake or PMKID capture,
   or anyone passively listening. It infers deauth attacks from connection

@@ -23,6 +23,8 @@ STRONGER_BY = 25        # dB above the learned best before a known AP is "too st
 FLOOD_MIN = 25          # extra networks in one scan before a spike counts
 FLOOD_NEW = 20          # brand-new networks in one scan before that counts
 RECENT_SCANS = 2        # a network counts as present if heard this many scans back
+LEARN_SCANS = 15        # learning takes every AP heard this many scans back (~2 min),
+                        # so distant APs that are only heard now and then are included
 MAX_SEEN = 300
 
 PORTAL_HOST = "connectivitycheck.gstatic.com"
@@ -268,6 +270,7 @@ def run_scan():
         net["sec"] = security(auth)
         net["ch"] = ch
         net["rssi"] = rssi
+        net["best"] = max(net.get("best", rssi), rssi)
         net["scan"] = scans
     if len(seen) > MAX_SEEN:
         for bssid in sorted(seen, key=lambda b: seen[b]["scan"])[:len(seen) - MAX_SEEN]:
@@ -377,24 +380,41 @@ def check_flood(count, new_here):
 
 
 def learn():
+    # adds to what was learned before, so learning in a few rooms (or at home
+    # and at work) builds up the full set of access points
     global message, message_until
     learned = []
     for ssid, pw in TRUSTED.items():
-        aps = {}
+        aps = baseline.get(ssid, {})
+        added = 0
         for bssid, n in seen.items():
-            if n["ssid"] == ssid and scans - n["scan"] < RECENT_SCANS:
-                if pw and weak(n["sec"]):
-                    continue    # never learn an open copy of a secured network
-                aps[hexmac(bssid)] = {"flags": n["flags"], "sec": n["sec"], "ch": n["ch"], "best": n["rssi"]}
+            if n["ssid"] != ssid or scans - n["scan"] >= LEARN_SCANS:
+                continue
+            if pw and weak(n["sec"]):
+                continue    # never learn an open copy of a secured network
+            mac = hexmac(bssid)
+            if mac not in aps:
+                added += 1
+            best = max(aps[mac]["best"], n["best"]) if mac in aps else n["best"]
+            aps[mac] = {"flags": n["flags"], "sec": n["sec"], "ch": n["ch"], "best": best}
         if aps:
             baseline[ssid] = aps
-            learned.append("{} ({})".format(ssid, len(aps)))
+            learned.append("{} +{} ({})".format(ssid, added, len(aps)))
     if learned:
         save_baseline()
-        message = "Trusted: " + ", ".join(learned)
+        message = "Trusted APs: " + ", ".join(learned)
         check_twin()
     else:
-        message = "None of your networks are in range"
+        message = "None of your networks heard recently"
+    message_until = badge.ticks + 5000
+
+
+def forget():
+    global baseline, message, message_until
+    baseline = {}
+    save_baseline()
+    check_twin()
+    message = "Forgot all learned access points"
     message_until = badge.ticks + 4000
 
 
@@ -565,10 +585,11 @@ def draw_chrome():
         footer = message
     elif badge.ticks < learn_armed_until:
         screen.pen = LEVEL_COLORS[CAUTION]
-        footer = "Press B again to trust the APs now in range"
+        footer = ("Press B again to forget ALL learned APs" if page == "history"
+                  else "Press B again to trust APs heard in the last ~2 min")
     elif page == "history":
         screen.pen = MUTED
-        footer = "UP/DN scroll   C back"
+        footer = "UP/DN scroll   B forget learned APs   C back"
     else:
         screen.pen = MUTED
         footer = "A clear warnings   B learn trusted APs   C history"
@@ -618,12 +639,16 @@ def update():
     if badge.pressed(BUTTON_B):
         if badge.ticks < learn_armed_until:
             learn_armed_until = 0
-            learn()
+            if page == "history":
+                forget()
+            else:
+                learn()
         else:
             learn_armed_until = badge.ticks + 3000
     if badge.pressed(BUTTON_C):
         page = "history" if page == "checks" else "checks"
         history_top = 0
+        learn_armed_until = 0   # a half-done B press doesn't carry across pages
     if page == "history":
         if badge.pressed(BUTTON_DOWN):
             history_top += 1
