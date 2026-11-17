@@ -1,7 +1,7 @@
 # badgeware
 
 Apps for the [Pimoroni Badgeware Tufty 2350](https://shop.pimoroni.com/products/tufty-2350)
-badge. Two pull live data over WiFi, one scans for the WiFi networks around you, and the
+badge. Two pull live data over WiFi, two scan for the WiFi networks and Bluetooth devices around you, and the
 others are name badges built around your own logo.
 All draw on the badge's full 320x240 screen.
 
@@ -110,6 +110,43 @@ have not been heard for three scans are greyed out but kept on the list.
 - Nothing is saved; the list starts empty each time the app opens. It doesn't
   need `secrets.py` or a WiFi connection.
 
+### Bluetooth Scanner
+
+Lists the Bluetooth Low Energy devices advertising nearby, adding each one as the
+badge hears it. Each row shows signal bars, the device's name (or what kind of
+device it is, or its address), the maker, and signal strength in dBm. New devices
+get a fading marker; devices not heard for 30 seconds are greyed out but kept.
+
+| Button | Action |
+|---|---|
+| UP / DOWN | Move through the list |
+| C | Details: address, maker, type, advertised services, connectable, TX power, first and last heard |
+| B | Sort by newest (first heard), latest (in range by signal, then most recently gone), signal or name |
+| A | Pause or resume scanning |
+
+- Scanning runs continuously in the background, so unlike the WiFi Scanner the
+  screen never pauses.
+- Only Bluetooth Low Energy: MicroPython doesn't support classic Bluetooth, so
+  older audio devices and the like won't show unless they also advertise over BLE.
+- Phones, watches and trackers mostly use random addresses that change every few
+  minutes, so one phone can show up as several devices over time.
+- The types for Apple devices (Find My, AirPods, Handoff and so on) come from
+  public reverse engineering of Apple's advertisements, not from Apple, so treat
+  them as best guesses.
+- Nothing is saved.
+
+**Maker names.** The app turns the manufacturer ID in each advertisement into a
+company name using the Bluetooth SIG's list of company identifiers. That list
+isn't included here. Build it before copying the app to the badge:
+
+```
+python bluetooth_scanner/make_companies.py
+```
+
+This downloads the list and writes `bluetooth_scanner/assets/companies.bin`
+(about 130 KB, roughly 4,000 companies). Without it the app still runs, naming a
+few common makers and showing the rest as a hex ID.
+
 ## More than one WiFi network
 
 The stock firmware reads a single `WIFI_SSID` and `WIFI_PASSWORD` from
@@ -134,7 +171,7 @@ Keep your filled-in copy out of any public repository; it holds your WiFi passwo
 1. Set your WiFi details in `secrets.py` on the badge, if you haven't already — or use
    the multi-network replacement from [More than one WiFi network](#more-than-one-wifi-network).
 2. Put the badge into disk mode (double-press RESET).
-3. Copy the app's folder (`planes_overhead`, `earthquakes`, `wifi_scanner`, `logo_badge` or `ham_badge`) into `apps` on the badge.
+3. Copy the app's folder (`planes_overhead`, `earthquakes`, `wifi_scanner`, `bluetooth_scanner`, `logo_badge` or `ham_badge`) into `apps` on the badge.
 4. Eject the drive and wait for it to finish, then press RESET.
 
 Always eject before resetting or unplugging. The badge's drive is easily
@@ -152,6 +189,7 @@ Check each provider's terms before building on these apps.
 - [adsb.lol](https://adsb.lol) for aircraft positions
 - [ip-api.com](https://ip-api.com) for approximate location (free for non-commercial use)
 - [USGS Earthquake Hazards Program](https://earthquake.usgs.gov/earthquakes/feed/) for earthquakes
+- [Bluetooth SIG assigned numbers](https://bitbucket.org/bluetooth-SIG/public/src/main/assigned_numbers/) for Bluetooth company identifiers and service UUIDs
 
 ## License
 

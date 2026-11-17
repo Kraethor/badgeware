@@ -4,3 +4,4 @@ __pycache__/
 venv/
 secrets.py
 *.img
+bluetooth_scanner/assets/companies.bin

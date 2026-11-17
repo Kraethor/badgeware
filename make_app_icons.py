@@ -158,3 +158,36 @@ build([
     ".knnnnnnnnnnnnnnnnnnk.",
     "..kkkkkkkkkkkkkkkkkk..",
 ], WIFI, HERE / "wifi_scanner" / "icon.png")
+
+BLE = {
+    ".": (0, 0, 0, 0),
+    "k": (16, 22, 40, 255),      # outline
+    "n": (18, 18, 38, 255),      # panel
+    "f": (170, 175, 255, 255),   # beacon / near waves
+    "m": (110, 115, 220, 255),   # middle waves
+    "w": (60, 62, 140, 255),     # far waves
+}
+build([
+    "..kkkkkkkkkkkkkkkkkk..",
+    ".knnnnnnnnnnnnnnnnnnk.",
+    "knnnnnnnnnnnnnnnnnnnnk",
+    "knnwnnnnnnnnnnnnnnwnnk",
+    "knwnnnnnnnnnnnnnnnnwnk",
+    "knwnnmnnnnnnnnnnmnnwnk",
+    "kwnnmnnnnnnnnnnnnmnnwk",
+    "kwnnmnnfnnnnnnfnnmnnwk",
+    "kwnmnnfnnnnnnnnfnnmnwk",
+    "kwnmnnfnnnffnnnfnnmnwk",
+    "kwnmnnfnnffffnnfnnmnwk",
+    "kwnmnnfnnffffnnfnnmnwk",
+    "kwnmnnfnnnffnnnfnnmnwk",
+    "kwnmnnfnnnnnnnnfnnmnwk",
+    "kwnnmnnfnnnnnnfnnmnnwk",
+    "kwnnmnnnnnnnnnnnnmnnwk",
+    "knwnnmnnnnnnnnnnmnnwnk",
+    "knwnnnnnnnnnnnnnnnnwnk",
+    "knnwnnnnnnnnnnnnnnwnnk",
+    "knnnnnnnnnnnnnnnnnnnnk",
+    ".knnnnnnnnnnnnnnnnnnk.",
+    "..kkkkkkkkkkkkkkkkkk..",
+], BLE, HERE / "bluetooth_scanner" / "icon.png")
